@@ -21,11 +21,12 @@ Claude.ai doesn't expose a public API for personal historical usage stats — no
 - 📈 **Approximate token estimate** *(see caveat below — not exact)*
 - 🧵 **Highlights** — longest conversation, most active month/year
 - 🖼️ **Export widgets** — save any individual stat card (heatmap, streak, top stats, etc.) as a standalone PNG/SVG image, sized for sharing — like Spotify Wrapped's individual share slides
+- 🗂️ **Multiple exports at once** — drop in more than one `conversations.json` (e.g. a personal account and a work account) and see them together on one dashboard. Each file gets its own color; the activity heatmap blends per-day where files overlap — corners of a cell show each source's own color and intensity, the center shows the mixed hue. Import as many as you like; distinct per-file colors are supported for up to 3 at once (most people use 1–2).
 
 ## How it works
 
 ```
-export data (.json)  →  drop in browser  →  parsed & rendered locally  →  browse dashboard  →  export any widget as an image
+export data (.json, 1+ files)  →  drop in browser  →  parsed & rendered locally  →  browse dashboard  →  export any widget as an image
 ```
 
 Nothing here is a live feed — it's a one-time (or whenever-you-want) pass over a static export file. There's no account, no login, no backend to talk to. The whole thing could run from a single HTML file with no internet connection at all, and that's intentional (see [Privacy](#privacy--read-this-before-uploading-anything)).
@@ -49,7 +50,7 @@ If a hosted version of this tool exists, treat it the same as running it locally
 
 1. **Export your data**: claude.ai → profile icon → Settings → Privacy → **Export data**. Anthropic emails you a download link (valid ~24h).
 2. **Unzip the archive** — you'll get a `conversations.json` (and possibly `projects.json` / account info files).
-3. Open the tool and drop `conversations.json` in.
+3. Open the tool and drop `conversations.json` in — drop more than one (e.g. from a second account) to see them together, each in its own color.
 4. Browse your stats.
 
 ### Running locally
@@ -69,6 +70,7 @@ Opens a dev server (Angular CLI, `ng serve`) at `http://localhost:4200`.
 - **Projects and memory** are inconsistently included (or excluded) in the standard export — features relying on them may be partial.
 - **This is a snapshot, not a live feed.** Re-export your data any time you want fresh stats; there's no way to auto-sync.
 - Very long conversations occasionally have incomplete data in Anthropic's own export (a known limitation on their end).
+- **Distinct per-file colors are capped at 3 imports.** A 4th+ file is still counted in the combined totals; how it's distinguished visually isn't decided yet.
 
 ## Tech stack
 
