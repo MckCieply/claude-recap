@@ -1,0 +1,57 @@
+<header class="dashboard__header">
+  <span class="dashboard__eyebrow">/// CLAUDE UNWRAPPED</span>
+  <h1 class="dashboard__title">Your usage, unwrapped.</h1>
+</header>
+
+<section class="dashboard__section">
+  <h2 class="dashboard__section-title">[ TIMELINE ]</h2>
+  <div class="dashboard__grid">
+    <app-stat-tile label="First conversation" [value]="timeline().firstActiveDate" />
+    <app-stat-tile label="Days active" [value]="timeline().daysActive" />
+  </div>
+</section>
+
+<hr class="dashboard__rule" />
+
+<section class="dashboard__section">
+  <h2 class="dashboard__section-title">[ ACTIVITY ]</h2>
+  <app-activity-heatmap [dailyActivity]="dailyActivity()" />
+</section>
+
+<hr class="dashboard__rule" />
+
+<section class="dashboard__section">
+  <h2 class="dashboard__section-title">[ COUNTS ]</h2>
+  <div class="dashboard__grid">
+    <app-stat-tile label="Conversations" [value]="counts().totalConversations" />
+    <app-stat-tile label="Messages" [value]="counts().totalMessages" />
+    <app-stat-tile label="Words" [value]="counts().totalWords" />
+    <app-stat-tile label="Est. tokens" [value]="counts().approxTokenEstimate" hint="rough estimate" />
+  </div>
+</section>
+
+<hr class="dashboard__rule" />
+
+<section class="dashboard__section">
+  <h2 class="dashboard__section-title">[ PATTERNS ]</h2>
+  <div class="dashboard__grid">
+    <app-stat-tile label="Busiest day" [value]="patterns().busiestDay" [hint]="patterns().busiestDayHint" />
+    <app-stat-tile label="Busiest hour" [value]="patterns().busiestHour" [hint]="patterns().busiestHourHint" />
+    <app-stat-tile label="Longest streak" [value]="patterns().longestStreakDays + ' days'" />
+  </div>
+</section>
+
+<hr class="dashboard__rule" />
+
+<section class="dashboard__section">
+  <h2 class="dashboard__section-title">[ HIGHLIGHTS ]</h2>
+  <div class="dashboard__grid">
+    <app-stat-tile
+      label="Longest conversation"
+      [value]="highlights().longestConversation"
+      [hint]="highlights().longestConversationHint"
+    />
+    <app-stat-tile label="Most active month" [value]="highlights().mostActiveMonth" />
+    <app-stat-tile label="Most active year" [value]="highlights().mostActiveYear" />
+  </div>
+</section>

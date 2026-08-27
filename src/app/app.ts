@@ -1,11 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
+import { Dashboard } from './dashboard/dashboard';
+import { sampleStats } from './data/sample-stats';
 
 @Component({
-  imports: [],
   selector: 'app-root',
-  styleUrl: './app.scss',
+  imports: [Dashboard],
   templateUrl: './app.html',
+  styleUrl: './app.scss',
 })
 export class App {
-  protected readonly title = signal('claude-unwrapped');
+  protected readonly stats = sampleStats;
 }

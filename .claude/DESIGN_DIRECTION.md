@@ -50,5 +50,17 @@ Rule from the source: **no second chromatic color, no gradients.** Everything be
 ### Motion
 Not specified in the source `DESIGN.md` (it's a marketing site, not the product UI). Default: fast, understated transitions (150–200ms, ease-out) — consistent with Linear's restrained, non-decorative feel. No spring/bounce easing, no atmospheric/gradient animation.
 
+### Data visualization — sequential ramp (activity heatmap)
+Per the `dataviz` skill: magnitude encoding is one hue, light→dark, computed and validated — not eyeballed. Derived by linearly mixing `surface-1` (`#0f1011`) toward `primary` (`#5e6ad2`) and checked with the skill's `validate_palette.js` `--ordinal` mode against `surface-1` (all checks PASS: monotone lightness, ≥0.06 adjacent ΔL, ≥2:1 light/dark-end contrast, single hue):
+
+| Level | Hex | Meaning |
+|---|---|---|
+| 0 (no activity) | `surface-1` (`#0f1011`) fill + `hairline` border | Not part of the ramp — absence, not a low magnitude |
+| 1 | `#3e4685` | |
+| 2 | `#4e58ab` | |
+| 3 (max) | `#5e6ad2` (== `primary`) | |
+
+Only 3 nonzero levels (not the usual 4-5): the achievable lightness range between `surface-1` and `primary` is narrow, and 4 steps couldn't clear the ≥0.06 adjacent-ΔL gate at this contrast floor — validated empirically, not assumed. Re-derive (same method) if the locked palette above ever changes.
+
 **Decision log:**
 - `2026-08-27` — Chose `linear.app` over `spotify` and `posthog`. Spotify was the initial recommendation (matches the README's own "Wrapped"-style tagline directly, strong shareable-card narrative) but its pill/rounded-everything shape language sits in real tension with `brutalist-skill`'s rigid-grid target. PostHog's playful cream/mascot-illustration identity risks visually echoing their actual hedgehog branding if not handled very deliberately. Linear's dense, single-accent, hairline-bordered, dark-canvas system is the most direct fit for a data-heavy dashboard and needs the least adaptation to work with `brutalist-skill` — user's explicit choice.

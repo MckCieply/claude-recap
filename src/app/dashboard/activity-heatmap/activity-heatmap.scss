@@ -1,0 +1,110 @@
+$cell: 11px;
+$gap: 3px;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.activity-heatmap__scroll {
+  overflow-x: auto;
+  padding-bottom: var(--space-xxs); // room for the month label row without clipping
+}
+
+.activity-heatmap__grid {
+  display: flex;
+  gap: $gap;
+  width: max-content;
+}
+
+.activity-heatmap__week {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+  position: relative;
+}
+
+.activity-heatmap__month-label {
+  position: absolute;
+  top: -16px;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+  white-space: nowrap;
+}
+
+.activity-heatmap__cell {
+  width: $cell;
+  height: $cell;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  cursor: default;
+  position: relative;
+
+  &[data-level='0'] {
+    background: var(--heat-0);
+    outline: 1px solid var(--hairline);
+    outline-offset: -1px;
+  }
+  &[data-level='1'] {
+    background: var(--heat-1);
+  }
+  &[data-level='2'] {
+    background: var(--heat-2);
+  }
+  &[data-level='3'] {
+    background: var(--heat-3);
+  }
+
+  &:hover,
+  &:focus-visible {
+    outline: 1px solid var(--ink);
+    outline-offset: -1px;
+    z-index: 1;
+  }
+
+  &--static {
+    cursor: default;
+  }
+}
+
+// CSS-only tooltip — shown on hover and keyboard focus alike.
+button.activity-heatmap__cell[data-tooltip] {
+  &:hover::after,
+  &:focus-visible::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + var(--space-xs));
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface-3);
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius-xs);
+    padding: var(--space-xxs) var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    white-space: nowrap;
+    color: var(--ink);
+    z-index: 2;
+    pointer-events: none;
+  }
+}
+
+.activity-heatmap__legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-subtle);
+
+  .activity-heatmap__cell {
+    width: $cell;
+    height: $cell;
+  }
+}

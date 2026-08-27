@@ -1,1 +1,76 @@
-/* You can add global styles to this file, and also import other style files */
+/*
+ * Design tokens resolved from .claude/DESIGN_DIRECTION.md (locked: linear.app reference,
+ * brutalist-skill layout). Components read these custom properties, not raw hex — see that
+ * file before changing any value here.
+ */
+:root {
+  // Color — surfaces & ink
+  --canvas: #010102;
+  --surface-1: #0f1011;
+  --surface-2: #141516;
+  --surface-3: #18191a;
+  --surface-4: #191a1b;
+  --hairline: #23252a;
+  --hairline-strong: #34343a;
+  --hairline-tertiary: #3e3e44;
+  --ink: #f7f8f8;
+  --ink-muted: #d0d6e0;
+  --ink-subtle: #8a8f98;
+  --ink-tertiary: #62666d;
+
+  // Color — the one accent, plus its states
+  --primary: #5e6ad2;
+  --primary-hover: #828fff;
+  --primary-focus: #5e69d1;
+
+  // Color — the only other chromatic color allowed
+  --success: #27a644;
+
+  // Sequential heatmap ramp (validated — see DESIGN_DIRECTION.md "Data visualization")
+  --heat-0: var(--surface-1); // no activity — not part of the ramp
+  --heat-1: #3e4685;
+  --heat-2: #4e58ab;
+  --heat-3: var(--primary);
+
+  // Typography
+  --font-display: 'SF Pro Display', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --font-body: 'SF Pro Display', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Consolas, monospace;
+
+  // Spacing
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-section: 96px;
+
+  // Radius — brutalist-skill override: sharper than Linear's own marketing site
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-pill: 9999px;
+
+  // Motion
+  --transition-fast: 150ms ease-out;
+  --transition-base: 200ms ease-out;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}

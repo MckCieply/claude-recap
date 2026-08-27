@@ -1,0 +1,27 @@
+<div class="activity-heatmap__scroll">
+  <div class="activity-heatmap__grid" role="img" [attr.aria-label]="'Daily activity heatmap, ' + weeks().length + ' weeks'">
+    @for (week of weeks(); track $index) {
+      <div class="activity-heatmap__week">
+        <span class="activity-heatmap__month-label">{{ week.monthLabel ?? '' }}</span>
+        @for (cell of week.days; track cell.date) {
+          <button
+            type="button"
+            class="activity-heatmap__cell"
+            [attr.data-level]="cell.level"
+            [attr.data-tooltip]="cellLabel(cell)"
+            [attr.aria-label]="cellLabel(cell)"
+          ></button>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<div class="activity-heatmap__legend">
+  <span>Less</span>
+  <span class="activity-heatmap__cell activity-heatmap__cell--static" data-level="0"></span>
+  <span class="activity-heatmap__cell activity-heatmap__cell--static" data-level="1"></span>
+  <span class="activity-heatmap__cell activity-heatmap__cell--static" data-level="2"></span>
+  <span class="activity-heatmap__cell activity-heatmap__cell--static" data-level="3"></span>
+  <span>More</span>
+</div>
