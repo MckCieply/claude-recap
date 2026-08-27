@@ -58,8 +58,10 @@ If a hosted version of this tool exists, treat it the same as running it locally
 git clone https://github.com/<your-username>/claude-unwrapped.git
 cd claude-unwrapped
 npm install
-npm run dev
+npm start
 ```
+
+Opens a dev server (Angular CLI, `ng serve`) at `http://localhost:4200`.
 
 ## Limitations
 
@@ -70,19 +72,21 @@ npm run dev
 
 ## Tech stack
 
-**Not decided yet.** Hard constraints that any choice has to satisfy, driven by the [Privacy](#privacy--read-this-before-uploading-anything) promise and the widget-export feature:
+Hard constraints any choice had to satisfy, driven by the [Privacy](#privacy--read-this-before-uploading-anything) promise and the widget-export feature: no backend or server calls, must work fully offline once loaded, must run entirely in-browser on a user-supplied JSON file that could be large, and needs a reliable way to render a single UI card to a downloadable PNG/SVG.
 
-- No backend, no build-time or run-time server calls — static site only, must work fully offline once loaded
-- Must run entirely in-browser on a user-supplied JSON file that could be large (years of conversation history)
-- Needs a reliable way to render a single UI card to a downloadable PNG/SVG (the export feature)
-
-| Layer | Candidates | Notes |
+| Layer | Decision | Notes |
 |---|---|---|
-| Framework | Vite + TypeScript (no framework), React, Svelte, SolidJS | Leaning toward something light — this is a single-page, mostly-static-after-load app, not a reason to reach for a full framework |
-| Charts / heatmap / stat tiles | Hand-rolled SVG, D3, visx | The vendored `dataviz` skill (see [CLAUDE.md](CLAUDE.md)) favors hand-rolled SVG marks over a heavy charting library — likely the default unless a specific chart turns out to need more |
-| Widget → image export | `html-to-image` / `html2canvas` (DOM→PNG), or render each widget natively to `<canvas>`/SVG and export that directly | Native canvas/SVG export gives more control and avoids DOM-to-image rendering quirks, at the cost of maintaining two render paths (screen + export) unless the on-screen widget *is* the SVG being exported |
-| Styling | Plain CSS, CSS Modules, Tailwind | Will follow whatever the locked design direction in [.claude/DESIGN_DIRECTION.md](.claude/DESIGN_DIRECTION.md) implies once that's set |
-| Hosting (optional) | GitHub Pages, Netlify, Vercel static, or just open `index.html` locally | Purely static output either way — "hosted version" in the Privacy section refers to this |
+| Framework | **Angular v22**, standalone components, zoneless (no Zone.js — removed by default in v22) | Chosen for existing team experience; `--routing=false`, single view with internal state, no SSR |
+| Language | **TypeScript**, strict mode | |
+| State | **Signals** (`signal()`/`computed()`/`linkedSignal()`) | Angular's current default state model, not RxJS-for-everything |
+| Charts / heatmap / stat tiles | Hand-rolled SVG | Per the vendored `dataviz` skill (see [CLAUDE.md](CLAUDE.md)) — no charting library pulled in unless a specific chart needs more |
+| Widget → image export | TBD at implementation time: native SVG/canvas export vs. `html-to-image`/`html2canvas` | Leaning native (the on-screen widget *is* the exportable SVG) to avoid a second render path — confirmed once the first widget is built |
+| Styling | Angular component styles, SCSS, view encapsulation (scoped) | Follows the locked design direction in [.claude/DESIGN_DIRECTION.md](.claude/DESIGN_DIRECTION.md) once that's set |
+| Testing | Vitest | Angular CLI's current default test runner |
+| Build | `@angular/build` (esbuild-based `application` builder) | Angular CLI default since v17; Webpack path is deprecated as of v22 |
+| Hosting (optional) | GitHub Pages, Netlify, Vercel static, or just open the built `dist/` locally | Purely static output either way — "hosted version" in the Privacy section refers to this |
+
+Full Angular coding conventions for this repo (signals-first, `input()`/`output()`/`model()`, Signal Forms, a11y bar, etc.) live in [CLAUDE.md](CLAUDE.md), generated from Angular's own current best-practice list via `ng new --ai-config=claude-code`.
 
 This section gets filled in for real once we pick — the [Getting started](#running-locally) commands below (`npm install && npm run dev`) assume a Vite-style setup and will need updating to match whatever we land on.
 
