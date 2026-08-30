@@ -1,0 +1,19 @@
+<button
+  type="button"
+  class="export-controls__btn"
+  [disabled]="!!pending()"
+  [attr.aria-busy]="pending() === 'png'"
+  [attr.aria-label]="'Export ' + filename() + ' as PNG image'"
+  (click)="export('png')"
+>{{ pending() === 'png' ? '···' : 'PNG' }}</button>
+<button
+  type="button"
+  class="export-controls__btn"
+  [disabled]="!!pending()"
+  [attr.aria-busy]="pending() === 'svg'"
+  [attr.aria-label]="'Export ' + filename() + ' as SVG image'"
+  (click)="export('svg')"
+>{{ pending() === 'svg' ? '···' : 'SVG' }}</button>
+@if (failed()) {
+  <span class="export-controls__status" role="alert">Export failed</span>
+}

@@ -1,8 +1,9 @@
 import { Component, input } from '@angular/core';
+import { ExportControls } from '../../export/export-controls';
 
 @Component({
   selector: 'app-stat-tile',
-  imports: [],
+  imports: [ExportControls],
   templateUrl: './stat-tile.html',
   styleUrl: './stat-tile.scss',
   host: { class: 'stat-tile' },

@@ -1,4 +1,5 @@
 :host {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-xxs);
@@ -15,6 +16,14 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-subtle);
+  // Reserve room for the absolutely-positioned export controls in the corner so a long label
+  // wraps earlier instead of running under them — otherwise a narrow tile (the grid's own
+  // 180px minmax floor) puts the two visually on a collision course. `overflow-wrap` matters
+  // just as much as the padding itself: several labels ("Conversations", "...conversation") are
+  // single unbreakable words wider than the reserved space, and without it they don't wrap at
+  // all — they overflow straight through the padding and back under the controls.
+  padding-right: calc(var(--space-xxl) + var(--space-lg));
+  overflow-wrap: anywhere;
 }
 
 .stat-tile__value {
