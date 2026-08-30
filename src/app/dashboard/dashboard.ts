@@ -1,15 +1,19 @@
 import { Component, computed, input } from '@angular/core';
 import type { DashboardStats } from '../data/stats';
+import type { SourceActivity } from '../data/multi-source-stats';
+import { ExportControls } from '../export/export-controls';
 import { ActivityHeatmap } from './activity-heatmap/activity-heatmap';
 import { StatTile } from './stat-tile/stat-tile';
 
 function formatNumber(n: number): string {
   if (n >= 10_000) return `${(n / 1000).toFixed(1)}K`;
-  return n.toLocaleString('en-US');
+  // No hardcoded locale — respects the viewer's own locale (grouping, digits)
+  // instead of forcing en-US formatting on everyone.
+  return n.toLocaleString();
 }
 
 function formatDate(iso: string): string {
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-US', {
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -19,10 +23,12 @@ function formatDate(iso: string): string {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [StatTile, ActivityHeatmap],
+  imports: [StatTile, ActivityHeatmap, ExportControls],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
-  host: { class: 'dashboard' },
+  // role="main": this is the app's sole content region (no nav/landing chrome
+  // wraps it today), so it should read as the main landmark for AT users.
+  host: { class: 'dashboard', role: 'main' },
 })
 export class Dashboard {
   readonly stats = input.required<DashboardStats>();
@@ -74,5 +80,13 @@ export class Dashboard {
     };
   });
 
-  protected readonly dailyActivity = computed(() => this.stats().dailyActivity);
+  // Bridge: `Dashboard` only receives a single combined `DashboardStats` today (the real
+  // per-source upload flow isn't wired through to this component yet), so this synthesizes the
+  // one-element `SourceActivity[]` the now-multi-source-capable heatmap expects. colorSlot 0
+  // (primary) matches source[0]'s slot in the real multi-source data layer, so this renders
+  // identically to the old single-source path. Replace with the real `sources` array once an
+  // upstream agent threads it through.
+  protected readonly heatmapSources = computed<SourceActivity[]>(() => [
+    { label: 'Activity', colorSlot: 0, dailyActivity: this.stats().dailyActivity },
+  ]);
 }

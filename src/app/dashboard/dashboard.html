@@ -15,7 +15,10 @@
 
 <section class="dashboard__section">
   <h2 class="dashboard__section-title">[ ACTIVITY ]</h2>
-  <app-activity-heatmap [dailyActivity]="dailyActivity()" />
+  <div class="dashboard__card">
+    <app-activity-heatmap [sources]="heatmapSources()" />
+    <app-export-controls filename="activity-heatmap" />
+  </div>
 </section>
 
 <hr class="dashboard__rule" />

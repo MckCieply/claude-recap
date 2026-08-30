@@ -8,9 +8,14 @@
             type="button"
             class="activity-heatmap__cell"
             [attr.data-level]="cell.level"
-            [attr.data-tooltip]="cellLabel(cell)"
-            [attr.aria-label]="cellLabel(cell)"
-          ></button>
+            [style.background]="cell.background"
+            [attr.data-tooltip]="cell.tooltip"
+            [attr.aria-label]="cell.tooltip"
+          >
+            @if (cell.marker) {
+              <span class="activity-heatmap__cell-marker" [style.background]="cell.marker"></span>
+            }
+          </button>
         }
       </div>
     }
@@ -25,3 +30,14 @@
   <span class="activity-heatmap__cell activity-heatmap__cell--static" data-level="3"></span>
   <span>More</span>
 </div>
+
+@if (sources().length > 1) {
+  <div class="activity-heatmap__source-legend">
+    @for (source of sources(); track source.label) {
+      <span class="activity-heatmap__source-key">
+        <span class="activity-heatmap__source-swatch" [style.background]="swatchFor(source)"></span>
+        {{ source.label }}
+      </span>
+    }
+  </div>
+}
