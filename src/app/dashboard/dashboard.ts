@@ -70,7 +70,7 @@ export class Dashboard {
         ? `${formatNumber(s.longestConversation.messageCount)} messages`
         : undefined,
       mostActiveMonth: s.mostActiveMonth
-        ? new Date(`${s.mostActiveMonth.month}-01T00:00:00Z`).toLocaleDateString('en-US', {
+        ? new Date(`${s.mostActiveMonth.month}-01T00:00:00Z`).toLocaleDateString(undefined, {
             year: 'numeric',
             month: 'long',
             timeZone: 'UTC',

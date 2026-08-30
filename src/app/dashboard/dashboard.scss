@@ -16,7 +16,10 @@
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.1em;
-  color: var(--primary);
+  // --primary on --canvas is ~4.44:1 at this size (fails WCAG AA 4.5:1 for
+  // normal-size text) — --primary-hover is the locked, already-lighter token
+  // for exactly this contrast need, ~7.3:1 against --canvas.
+  color: var(--primary-hover);
 }
 
 .dashboard__title {
@@ -26,6 +29,7 @@
   font-weight: 600;
   letter-spacing: -1px;
   line-height: 1.1;
+  text-wrap: balance;
 }
 
 .dashboard__section {
@@ -49,6 +53,16 @@
   app-stat-tile {
     display: flex;
   }
+}
+
+.dashboard__card {
+  position: relative;
+  // Extra top clearance (beyond the other sides' --space-lg) so the export controls in the
+  // corner never overlap the heatmap's own month-label row, which pokes above its content.
+  padding: var(--space-xxl) var(--space-lg) var(--space-lg);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
 }
 
 .dashboard__rule {

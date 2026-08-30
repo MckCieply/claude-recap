@@ -38,6 +38,9 @@
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--ink-subtle);
+  // File names are user-supplied and unbounded in length; without this an
+  // unbroken long name can push the list wider than its container.
+  overflow-wrap: break-word;
 }
 
 .app__reset {
