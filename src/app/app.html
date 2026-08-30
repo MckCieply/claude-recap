@@ -14,7 +14,7 @@
     }
     <button type="button" class="app__reset" (click)="reset()">Import a Different File</button>
   </div>
-  <app-dashboard [stats]="multiSourceStats().stats" />
+  <app-dashboard [stats]="multiSourceStats().stats" [sources]="multiSourceStats().sources" />
 } @else {
   <app-landing (imported)="onImported($event)" />
 }

@@ -32,6 +32,7 @@ function formatDate(iso: string): string {
 })
 export class Dashboard {
   readonly stats = input.required<DashboardStats>();
+  readonly sources = input.required<SourceActivity[]>();
 
   protected readonly timeline = computed(() => {
     const s = this.stats();
@@ -79,14 +80,4 @@ export class Dashboard {
       mostActiveYear: s.mostActiveYear?.year ?? '—',
     };
   });
-
-  // Bridge: `Dashboard` only receives a single combined `DashboardStats` today (the real
-  // per-source upload flow isn't wired through to this component yet), so this synthesizes the
-  // one-element `SourceActivity[]` the now-multi-source-capable heatmap expects. colorSlot 0
-  // (primary) matches source[0]'s slot in the real multi-source data layer, so this renders
-  // identically to the old single-source path. Replace with the real `sources` array once an
-  // upstream agent threads it through.
-  protected readonly heatmapSources = computed<SourceActivity[]>(() => [
-    { label: 'Activity', colorSlot: 0, dailyActivity: this.stats().dailyActivity },
-  ]);
 }
