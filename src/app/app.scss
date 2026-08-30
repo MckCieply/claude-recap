@@ -1,0 +1,67 @@
+// The toolbar sits on top of the data-bearing dashboard view, not the pre-data landing
+// screen, so it follows brutalist-skill's treatment (sharp radius, mono type) rather than
+// taste-skill's — per CLAUDE.md's conflict rule, real user data on screen wins.
+:host {
+  display: block;
+}
+
+.app__toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: var(--space-md) var(--space-lg) 0;
+}
+
+.app__skipped {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-xs);
+}
+
+.app__skipped-summary {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.app__skipped-list {
+  margin: 0;
+  padding-left: var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-subtle);
+}
+
+.app__reset {
+  align-self: flex-start;
+  padding: var(--space-xs) var(--space-md);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+
+  &:hover {
+    border-color: var(--hairline-strong);
+    color: var(--ink);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary-focus);
+    outline-offset: 2px;
+  }
+}

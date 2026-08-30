@@ -1,1 +1,20 @@
-<app-dashboard [stats]="stats" />
+@if (hasData()) {
+  <div class="app__toolbar">
+    @if (skippedFiles().length > 0) {
+      <div class="app__skipped" role="status">
+        <p class="app__skipped-summary">
+          {{ skippedFiles().length }} file{{ skippedFiles().length === 1 ? '' : 's' }} skipped on import:
+        </p>
+        <ul class="app__skipped-list">
+          @for (file of skippedFiles(); track file.name) {
+            <li>{{ file.name }}: {{ file.message }}</li>
+          }
+        </ul>
+      </div>
+    }
+    <button type="button" class="app__reset" (click)="reset()">Import a different file</button>
+  </div>
+  <app-dashboard [stats]="multiSourceStats().stats" />
+} @else {
+  <app-landing (imported)="onImported($event)" />
+}

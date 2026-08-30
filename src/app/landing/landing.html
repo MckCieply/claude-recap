@@ -1,0 +1,104 @@
+<div class="landing__brand">Claude Unwrapped</div>
+
+<header class="landing__hero">
+  <h1 class="landing__title">Your Claude usage, turned into a dashboard.</h1>
+  <p class="landing__subtitle">
+    Drop in your Claude.ai data export to see your activity, streaks, and stats.
+  </p>
+</header>
+
+<ul class="landing__privacy" aria-label="Privacy guarantees">
+  <li class="landing__privacy-item">
+    <svg class="landing__privacy-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M4 10.5 8 14l8-8" stroke="var(--success)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span>Processed entirely in your browser. Your file is never uploaded.</span>
+  </li>
+  <li class="landing__privacy-item">
+    <svg class="landing__privacy-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M4 10.5 8 14l8-8" stroke="var(--success)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span>No account, no analytics, no server calls.</span>
+  </li>
+  <li class="landing__privacy-item">
+    <svg class="landing__privacy-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M4 10.5 8 14l8-8" stroke="var(--success)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span>Works fully offline. Check your browser's network tab to confirm.</span>
+  </li>
+</ul>
+
+<section class="landing__upload">
+  <label
+    class="dropzone"
+    [class.dropzone--active]="isDragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave()"
+    (drop)="onDrop($event)"
+  >
+    <input
+      class="dropzone__input"
+      type="file"
+      accept=".json,application/json"
+      multiple
+      (change)="onFileInputChange($event)"
+    />
+    <svg class="dropzone__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M12 4v11m0-11 3.5 3.5M12 4 8.5 7.5M5 15.5v2A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-2"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    <span class="dropzone__primary">Drop your conversations.json here</span>
+    <span class="dropzone__secondary">or click to browse</span>
+  </label>
+
+  @if (rows().length > 0) {
+    <ul class="file-rows" aria-live="polite">
+      @for (row of rows(); track row.id) {
+        <li class="file-row" [attr.data-status]="row.status">
+          <span class="file-row__icon" aria-hidden="true">
+            @switch (row.status) {
+              @case ('reading') {
+                <span class="file-row__spinner"></span>
+              }
+              @case ('success') {
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path d="M4 10.5 8 14l8-8" stroke="var(--success)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              }
+              @case ('error') {
+                <svg viewBox="0 0 20 20" fill="none">
+                  <path
+                    d="M10 6.5v4.5M10 13.75h.01M9.15 3.4 2.62 15a1.4 1.4 0 0 0 1.22 2.1h12.32a1.4 1.4 0 0 0 1.22-2.1L10.85 3.4a1 1 0 0 0-1.7 0Z"
+                    stroke="var(--ink)"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              }
+            }
+          </span>
+          <span class="file-row__body">
+            <span class="file-row__name">{{ row.name }}</span>
+            @if (row.status === 'error' && row.message) {
+              <span class="file-row__message">{{ row.message }}</span>
+            }
+          </span>
+        </li>
+      }
+    </ul>
+  }
+
+  <p class="landing__hint">
+    Drop multiple files at once (e.g. a personal and a work export) to see them together, each in its own color.
+  </p>
+</section>
+
+<p class="landing__export-help">
+  Don't have an export yet? On claude.ai: profile icon &rarr; Settings &rarr; Privacy &rarr; Export data.
+</p>
