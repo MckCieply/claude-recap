@@ -47,10 +47,13 @@
   --space-xxl: 48px;
   --space-section: 96px;
 
-  // Radius — brutalist-skill override: sharper than Linear's own marketing site
+  // Radius — brutalist-skill overrides the dashboard to xs/sm; lg/xl are Linear's own
+  // marketing-site preference, used by pre-data/landing surfaces (taste-skill).
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-pill: 9999px;
 
   // Motion
