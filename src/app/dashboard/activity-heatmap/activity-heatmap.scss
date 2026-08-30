@@ -10,6 +10,11 @@ $gap: 3px;
 .activity-heatmap__scroll {
   overflow-x: auto;
   padding-bottom: var(--space-xxs); // room for the month label row without clipping
+  // Setting overflow-x forces overflow-y to compute as `auto` too (CSS Overflow spec), which
+  // would clip the CSS-only tooltip (::after, positioned above the cell) for any cell in the
+  // grid's top row. Overflow clips at the padding edge, not the content edge, so reserving
+  // padding-top roughly the tooltip's own height keeps it inside the unclipped area.
+  padding-top: 28px;
 }
 
 .activity-heatmap__grid {

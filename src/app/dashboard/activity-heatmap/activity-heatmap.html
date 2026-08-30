@@ -1,5 +1,5 @@
 <div class="activity-heatmap__scroll">
-  <div class="activity-heatmap__grid" role="img" [attr.aria-label]="'Daily activity heatmap, ' + weeks().length + ' weeks'">
+  <div class="activity-heatmap__grid" role="group" [attr.aria-label]="'Daily activity heatmap, ' + weeks().length + ' weeks'">
     @for (week of weeks(); track $index) {
       <div class="activity-heatmap__week">
         <span class="activity-heatmap__month-label">{{ week.monthLabel ?? '' }}</span>
@@ -13,7 +13,7 @@
             [attr.aria-label]="cell.tooltip"
           >
             @if (cell.marker) {
-              <span class="activity-heatmap__cell-marker" [style.background]="cell.marker"></span>
+              <span class="activity-heatmap__cell-marker" [style.background]="cell.marker" aria-hidden="true"></span>
             }
           </button>
         }
