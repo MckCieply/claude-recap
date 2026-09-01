@@ -113,7 +113,10 @@ export class ActivityHeatmap {
     const windowStart = Math.min(firstMs, yearStartMs);
     const windowEnd = Math.max(lastMs, yearEndMs);
 
-    // Pad to full weeks: Sunday on/before first, Saturday on/after last (UTC).
+    // Columns still align to real calendar weeks (Sunday-Saturday) so month boundaries land
+    // cleanly, but the edge columns are trimmed to the exact window below rather than padded
+    // with days outside it — Jan 1 starts its column partway down instead of pulling in days
+    // from the prior December, and Dec 31 ends its column early instead of spilling into January.
     const gridStart = windowStart - new Date(windowStart).getUTCDay() * MS_PER_DAY;
     const gridEnd = windowEnd + (6 - new Date(windowEnd).getUTCDay()) * MS_PER_DAY;
 
@@ -124,6 +127,7 @@ export class ActivityHeatmap {
       let monthLabel: string | undefined;
       for (let d = 0; d < 7; d++) {
         const ms = weekStart + d * MS_PER_DAY;
+        if (ms < windowStart || ms > windowEnd) continue;
         const date = toDateKey(ms);
         const monthKey = date.slice(0, 7);
         if (!monthLabel && !seenMonths.has(monthKey)) {
