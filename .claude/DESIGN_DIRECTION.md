@@ -53,16 +53,16 @@ Rule from the source: **no second chromatic color, no gradients.** Everything be
 Not specified in the source `DESIGN.md` (it's a marketing site, not the product UI). Default: fast, understated transitions (150–200ms, ease-out) — consistent with Linear's restrained, non-decorative feel. No spring/bounce easing, no atmospheric/gradient animation.
 
 ### Data visualization — sequential ramp (activity heatmap)
-Per the `dataviz` skill: magnitude encoding is one hue, light→dark, computed and validated — not eyeballed. Derived by linearly mixing `surface-1` (`#0f1011`) toward `primary` (`#5e6ad2`) and checked with the skill's `validate_palette.js` `--ordinal` mode against `surface-1` (all checks PASS: monotone lightness, ≥0.06 adjacent ΔL, ≥2:1 light/dark-end contrast, single hue):
+Per the `dataviz` skill: magnitude encoding is one hue, light→dark, computed and validated — not eyeballed. Level 3 is fixed at `primary` (`#5e6ad2`) exactly — the heatmap's max cell deliberately reuses the site's one accent color. Levels 1–2 are derived directly in OKLCH (not by mixing sRGB hex strings — see 2026-09-01 decision log entry below) and checked with the skill's `validate_palette.js` `--ordinal` mode against `surface-1` (all checks PASS: monotone lightness, ≥0.06 adjacent ΔL, ≥2:1 light-end contrast, single hue):
 
-| Level | Hex | Meaning |
-|---|---|---|
-| 0 (no activity) | `surface-1` (`#0f1011`) fill + `hairline` border | Not part of the ramp — absence, not a low magnitude |
-| 1 | `#3e4685` | |
-| 2 | `#4e58ab` | |
-| 3 (max) | `#5e6ad2` (== `primary`) | |
+| Level | Hex | OKLCH (L / C) | Meaning |
+|---|---|---|---|
+| 0 (no activity) | `surface-1` (`#0f1011`) fill + `hairline` border | — | Not part of the ramp — absence, not a low magnitude |
+| 1 | `#3f4666` | 0.401 / 0.087 | |
+| 2 | `#4d579e` | 0.484 / 0.127 | |
+| 3 (max) | `#5e6ad2` (== `primary`) | 0.567 / 0.159 | |
 
-Only 3 nonzero levels (not the usual 4-5): the achievable lightness range between `surface-1` and `primary` is narrow, and 4 steps couldn't clear the ≥0.06 adjacent-ΔL gate at this contrast floor — validated empirically, not assumed. Re-derive (same method) if the locked palette above ever changes.
+Only 3 nonzero levels (not the usual 4-5): the achievable lightness range between `surface-1` and `primary` is narrow, and 4 steps couldn't clear the ≥0.06 adjacent-ΔL gate at this contrast floor — validated empirically, not assumed. Adjacent ΔL is ~0.083 per step here (vs. ~0.075 in the original sRGB-mix version) — genuinely wider, but `primary`'s own lightness (L 0.567) caps how much more room exists while level 3 stays pinned to it exactly; levels 1–2 also carry a much bigger *chroma* spread now (35%/72% of level 3's chroma, vs. ~66%/83% before) so the ramp reads as "barely tinted → vivid" instead of "similarly saturated, subtly lighter" — the validator doesn't score chroma directly, but it's what actually fixed the "levels look too close together" complaint that prompted this re-derivation. Re-derive (same method) if the locked palette above ever changes.
 
 ### Data visualization — categorical palette (multi-file source identity)
 Feature: importing multiple export files at once (e.g. a personal export and a work export) and telling their activity apart on the same dashboard. This is a **categorical** job (identity: which file), not sequential — per the `dataviz` skill it needs its own fixed-order hue set, validated for CVD separation, not a shade of `primary`.
@@ -77,15 +77,15 @@ Validated as a set with `validate_palette.js` (categorical mode, adjacent pairs,
 
 **Practical cap: 3 sources with a validated, distinguishable color.** A 4th hue was not derived — per the skill, "never solve too many series by generating more hues" on the fly. A 4th+ file is an open question (fold into a neutral "combined" bucket? require picking 3?) — revisit if it comes up; it's the explicitly rare case here.
 
-Each source also gets its **own 3-level sequential ramp**, same method and same stops (`0.60, 0.80, 1.0` from `surface-1`) as the primary ramp above, so a source's color can also carry *how much* activity, not just *which file*:
+Each source also gets its **own 3-level sequential ramp**, same OKLCH-native method as the primary ramp above (see 2026-08-30 decision log entry), so a source's color can also carry *how much* activity, not just *which file*:
 
 | Level | Source 1 (primary) | Source 2 (orange) | Source 3 (aqua) |
 |---|---|---|---|
-| 1 | `#3e4685` | `#883c1e` | `#15654a` |
-| 2 | `#4e58ab` | `#b14a22` | `#17825d` |
+| 1 | `#3f4666` | `#653d2f` | `#2e4e3f` |
+| 2 | `#4d579e` | `#a04929` | `#267656` |
 | 3 (max) | `#5e6ad2` | `#d95926` | `#199e70` |
 
-All three ramps independently pass the same `--ordinal` checks as the primary one (monotone lightness, ≥0.06 adjacent ΔL, ≥2:1 dark-end contrast, single hue).
+All three ramps independently pass the same `--ordinal` checks as the primary one (monotone lightness, ≥0.06 adjacent ΔL, ≥2:1 dark-end contrast, single hue) — orange and aqua land wider gaps than primary (~0.109 and ~0.114 ΔL per step, vs. ~0.083 for primary) simply because their level-3 anchors are lighter (`L` 0.622 / 0.621 vs. primary's 0.567), leaving more room before the level-1 contrast floor.
 
 #### Heatmap cell rendering with multiple sources
 - **Day touched by one source only:** flat fill, that source's own ramp level for that day — identical to the original single-source cell.
@@ -99,3 +99,4 @@ Known, accepted trade-off: this whole mechanic (corners aside) breaks the `datav
 **Decision log:**
 - `2026-08-27` — Added multi-file import (e.g. personal + work exports shown together) as a planned feature. Requires a categorical per-source color, which breaks the "single accent only" rule from the source `DESIGN.md` on purpose — see "Data visualization — categorical palette" above for the validated colors and the corner-gradient heatmap mechanic, chosen (over both a flat blend and separate per-source small-multiple heatmaps) specifically to keep source identity visible at a glance while still showing overlap. User's explicit choice after seeing the identity/CVD trade-off of a flat blend.
 - `2026-08-27` — Chose `linear.app` over `spotify` and `posthog`. Spotify was the initial recommendation (matches the README's own "Wrapped"-style tagline directly, strong shareable-card narrative) but its pill/rounded-everything shape language sits in real tension with `brutalist-skill`'s rigid-grid target. PostHog's playful cream/mascot-illustration identity risks visually echoing their actual hedgehog branding if not handled very deliberately. Linear's dense, single-accent, hairline-bordered, dark-canvas system is the most direct fit for a data-heavy dashboard and needs the least adaptation to work with `brutalist-skill` — user's explicit choice.
+- `2026-09-01` — Re-derived all three heatmap sequential ramps (primary/orange/aqua) after live user feedback that the 3 levels read as too close to each other. Root cause: the original ramps were built by mixing sRGB hex strings at fixed stops, which (a) left levels 1–2 nearly as saturated as level 3 (little chroma signal) and (b) only barely cleared the validator's 0.06 minimum adjacent-ΔL gate (~0.073–0.075), which is a *pass floor*, not a *good* gap. Re-derived by working directly in OKLCH instead: level 3 stays pinned to each hue's existing brand anchor exactly (`primary`/`#d95926`/`#199e70`, unchanged), level 1's lightness is set to the minimum that still clears the ordinal check's 2:1 light-end-contrast floor against `surface-1` (~L 0.39–0.40 depending on hue) plus a small safety buffer, level 2 sits at the midpoint between levels 1 and 3, and chroma is scaled to 35%/72%/100% of each hue's own top chroma across levels 1/2/3 — a much bigger saturation spread than before, which the `--ordinal` validator doesn't score directly but is what actually reads as "clearly different steps" rather than "same color, subtly lighter." All three ramps re-run through `validate_palette.js --ordinal` and PASS. Primary's own gap only widened to ~0.083 (vs. ~0.109/0.114 for orange/aqua) because `primary`'s L (0.567) sits closer to the level-1 contrast floor than orange/aqua's lighter anchors do — a real ceiling from keeping level 3 pinned to the exact brand color, not an oversight.

@@ -18,11 +18,13 @@ $gap: 3px;
   min-width: 0;
   overflow-x: auto;
   padding-bottom: var(--space-xxs); // room for the month label row without clipping
-  // Setting overflow-x forces overflow-y to compute as `auto` too (CSS Overflow spec), which
-  // would clip the CSS-only tooltip (::after, positioned above the cell) for any cell in the
-  // grid's top row. Overflow clips at the padding edge, not the content edge, so reserving
-  // padding-top roughly the tooltip's own height keeps it inside the unclipped area.
-  padding-top: 28px;
+  // Setting overflow-x forces overflow-y to compute as `auto` too (CSS Overflow spec). The month
+  // label (`.activity-heatmap__month-label`, `top: -16px` relative to its week) pokes above the
+  // grid's own top edge, which overflow clips at the padding edge — reserving padding-top keeps
+  // it inside the unclipped area. (The tooltip used to need much more room here too; now that
+  // it's a `position: fixed` element positioned via JS, it's exempt from this ancestor's overflow
+  // entirely and no longer needs any padding accommodation.)
+  padding-top: 18px;
 }
 
 .activity-heatmap__grid {
@@ -98,26 +100,25 @@ $gap: 3px;
   pointer-events: none;
 }
 
-// CSS-only tooltip — shown on hover and keyboard focus alike.
-button.activity-heatmap__cell[data-tooltip] {
-  &:hover::after,
-  &:focus-visible::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: calc(100% + var(--space-xs));
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--surface-3);
-    border: 1px solid var(--hairline-strong);
-    border-radius: var(--radius-xs);
-    padding: var(--space-xxs) var(--space-xs);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    white-space: nowrap;
-    color: var(--ink);
-    z-index: 2;
-    pointer-events: none;
-  }
+// Cell tooltip — a single shared element, positioned in viewport coordinates via JS on
+// hover/focus (see activity-heatmap.ts `showTooltip`). `position: fixed` takes it out of every
+// ancestor's overflow/scrollable-area calculation entirely, so unlike the old CSS-only `::after`
+// version it can never get clipped by, or accidentally widen, `.activity-heatmap__scroll`.
+.activity-heatmap__tooltip {
+  position: fixed;
+  transform: translate(-50%, calc(-100% - 8px));
+  background: var(--surface-3);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-xs);
+  padding: var(--space-xxs) var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink);
+  white-space: normal;
+  max-width: 220px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 100;
 }
 
 .activity-heatmap__legend {
@@ -167,7 +168,7 @@ button.activity-heatmap__cell[data-tooltip] {
   flex-direction: column;
   gap: 2px;
   flex: none;
-  padding-top: 28px; // lines up with .activity-heatmap__scroll's own top padding
+  padding-top: 18px; // lines up with .activity-heatmap__scroll's own top padding
 }
 
 .activity-heatmap__year {

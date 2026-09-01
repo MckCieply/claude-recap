@@ -1,4 +1,4 @@
-import { Component, computed, input, linkedSignal } from '@angular/core';
+import { Component, computed, input, linkedSignal, signal } from '@angular/core';
 import type { SourceActivity } from '../../data/multi-source-stats';
 import { blendHexOklch } from './oklch-blend';
 
@@ -36,6 +36,13 @@ interface Week {
   monthLabel?: string;
 }
 
+/** Viewport coordinates (not relative to any scrolling ancestor) for the floating tooltip. */
+interface TooltipState {
+  x: number;
+  y: number;
+  text: string;
+}
+
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MS_PER_DAY = 86_400_000;
 
@@ -47,9 +54,9 @@ const MS_PER_DAY = 86_400_000;
  * the single-source backward-compat path exact.
  */
 const RAMP: Record<0 | 1 | 2, Record<1 | 2 | 3, string>> = {
-  0: { 1: '#3e4685', 2: '#4e58ab', 3: '#5e6ad2' },
-  1: { 1: '#883c1e', 2: '#b14a22', 3: '#d95926' },
-  2: { 1: '#15654a', 2: '#17825d', 3: '#199e70' },
+  0: { 1: '#3f4666', 2: '#4d579e', 3: '#5e6ad2' },
+  1: { 1: '#653d2f', 2: '#a04929', 3: '#d95926' },
+  2: { 1: '#2e4e3f', 2: '#267656', 3: '#199e70' },
 };
 
 /** Neutral fallback fill for a day touched only by a colorSlot-undefined (4th+) source — see
@@ -112,6 +119,32 @@ export class ActivityHeatmap {
 
   protected selectYear(year: number): void {
     this.selectedYear.set(year);
+  }
+
+  /**
+   * The cell tooltip used to be a CSS-only `::after` positioned `absolute` relative to the
+   * button. Inside `.activity-heatmap__scroll` (`overflow-x: auto`, which per the CSS Overflow
+   * spec forces `overflow-y` to compute as `auto` too) that broke two ways at once: it clipped
+   * for any cell near the grid's edges, and — worse — an absolutely positioned descendant that
+   * overflows a scrolling ancestor's content box still counts toward that ancestor's *scrollable*
+   * overflow, so a long multi-source tooltip ("3 messages on … (a: 1, b: 2)") visibly widened the
+   * horizontal scrollbar just from hovering. A single `position: fixed` tooltip, positioned in
+   * viewport coordinates via JS on hover/focus, escapes both problems: `position: fixed` is taken
+   * out of every ancestor's overflow/scrollable-area calculation entirely (it's relative to the
+   * viewport, not any containing block in between), so it can never clip against or resize the
+   * scroll container no matter how wide the text gets.
+   */
+  protected readonly tooltip = signal<TooltipState | null>(null);
+
+  protected showTooltip(event: MouseEvent | FocusEvent, text: string): void {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const halfWidth = 110; // half of the tooltip's own max-width, see .activity-heatmap__tooltip
+    const x = Math.min(Math.max(rect.left + rect.width / 2, halfWidth), window.innerWidth - halfWidth);
+    this.tooltip.set({ x, y: rect.top, text });
+  }
+
+  protected hideTooltip(): void {
+    this.tooltip.set(null);
   }
 
   protected readonly weeks = computed<Week[]>(() => {

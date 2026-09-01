@@ -10,8 +10,11 @@
               class="activity-heatmap__cell"
               [attr.data-level]="cell.level"
               [style.background]="cell.background"
-              [attr.data-tooltip]="cell.tooltip"
               [attr.aria-label]="cell.tooltip"
+              (mouseenter)="showTooltip($event, cell.tooltip)"
+              (mouseleave)="hideTooltip()"
+              (focus)="showTooltip($event, cell.tooltip)"
+              (blur)="hideTooltip()"
             >
               @if (cell.marker) {
                 <span class="activity-heatmap__cell-marker" [style.background]="cell.marker" aria-hidden="true"></span>
@@ -57,5 +60,11 @@
         {{ source.label }}
       </span>
     }
+  </div>
+}
+
+@if (tooltip(); as t) {
+  <div class="activity-heatmap__tooltip" aria-hidden="true" [style.left.px]="t.x" [style.top.px]="t.y">
+    {{ t.text }}
   </div>
 }
