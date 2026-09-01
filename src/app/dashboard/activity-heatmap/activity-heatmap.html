@@ -1,25 +1,43 @@
-<div class="activity-heatmap__scroll">
-  <div class="activity-heatmap__grid" role="group" [attr.aria-label]="'Daily activity heatmap, ' + weeks().length + ' weeks'">
-    @for (week of weeks(); track $index) {
-      <div class="activity-heatmap__week">
-        <span class="activity-heatmap__month-label">{{ week.monthLabel ?? '' }}</span>
-        @for (cell of week.days; track cell.date) {
-          <button
-            type="button"
-            class="activity-heatmap__cell"
-            [attr.data-level]="cell.level"
-            [style.background]="cell.background"
-            [attr.data-tooltip]="cell.tooltip"
-            [attr.aria-label]="cell.tooltip"
-          >
-            @if (cell.marker) {
-              <span class="activity-heatmap__cell-marker" [style.background]="cell.marker" aria-hidden="true"></span>
-            }
-          </button>
-        }
-      </div>
-    }
+<div class="activity-heatmap__row">
+  <div class="activity-heatmap__scroll">
+    <div class="activity-heatmap__grid" role="group" [attr.aria-label]="'Daily activity heatmap, ' + selectedYear() + ', ' + weeks().length + ' weeks'">
+      @for (week of weeks(); track $index) {
+        <div class="activity-heatmap__week">
+          <span class="activity-heatmap__month-label">{{ week.monthLabel ?? '' }}</span>
+          @for (cell of week.days; track cell.date) {
+            <button
+              type="button"
+              class="activity-heatmap__cell"
+              [attr.data-level]="cell.level"
+              [style.background]="cell.background"
+              [attr.data-tooltip]="cell.tooltip"
+              [attr.aria-label]="cell.tooltip"
+            >
+              @if (cell.marker) {
+                <span class="activity-heatmap__cell-marker" [style.background]="cell.marker" aria-hidden="true"></span>
+              }
+            </button>
+          }
+        </div>
+      }
+    </div>
   </div>
+
+  @if (availableYears().length > 1) {
+    <nav class="activity-heatmap__years" aria-label="Select year">
+      @for (year of availableYears(); track year) {
+        <button
+          type="button"
+          class="activity-heatmap__year"
+          [class.activity-heatmap__year--active]="year === selectedYear()"
+          [attr.aria-current]="year === selectedYear() ? 'true' : null"
+          (click)="selectYear(year)"
+        >
+          {{ year }}
+        </button>
+      }
+    </nav>
+  }
 </div>
 
 <div class="activity-heatmap__legend">

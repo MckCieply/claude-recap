@@ -42,3 +42,9 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Real Claude.ai data exports — never committed, see README's Privacy/Contributing sections.
+# Only root-level: src/ test fixtures and sample data stay tracked.
+/conversations.json
+/projects.json
+/*.zip

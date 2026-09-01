@@ -1,0 +1,5 @@
+# Real Claude.ai data exports dropped at the repo root for local testing — never read into
+# context, never committed. See README's Privacy/Contributing sections and .gitignore.
+/conversations.json
+/projects.json
+/*.zip

@@ -7,7 +7,15 @@ $gap: 3px;
   gap: var(--space-sm);
 }
 
+.activity-heatmap__row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  min-width: 0; // let .activity-heatmap__scroll's own overflow-x handle a too-narrow container
+}
+
 .activity-heatmap__scroll {
+  min-width: 0;
   overflow-x: auto;
   padding-bottom: var(--space-xxs); // room for the month label row without clipping
   // Setting overflow-x forces overflow-y to compute as `auto` too (CSS Overflow spec), which
@@ -150,4 +158,40 @@ button.activity-heatmap__cell[data-tooltip] {
   height: $cell;
   border-radius: 2px;
   flex: none;
+}
+
+// Year picker — sits to the right of the grid, like GitHub's own year sidebar. Only rendered
+// (see template) when there's more than one year with real activity to switch between.
+.activity-heatmap__years {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+  padding-top: 28px; // lines up with .activity-heatmap__scroll's own top padding
+}
+
+.activity-heatmap__year {
+  padding: var(--space-xxs) var(--space-xs);
+  border: none;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  color: var(--ink-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: right;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ink);
+  }
+
+  &:focus-visible {
+    outline: 1px solid var(--ink);
+    outline-offset: -1px;
+  }
+
+  &--active {
+    color: var(--primary);
+    font-weight: 600;
+  }
 }

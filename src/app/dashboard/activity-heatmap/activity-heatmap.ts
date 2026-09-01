@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, linkedSignal } from '@angular/core';
 import type { SourceActivity } from '../../data/multi-source-stats';
 import { blendHexOklch } from './oklch-blend';
 
@@ -84,14 +84,39 @@ function cellLabel(date: string, count: number, breakdown?: { label: string; cou
 export class ActivityHeatmap {
   readonly sources = input.required<SourceActivity[]>();
 
+  /** A continuous run of calendar years, newest first, from the oldest year with any activity
+   * through the current year — same shape as GitHub's own year sidebar (account-lifetime range,
+   * not just the specific years that happen to have a square filled in). A gap year with zero
+   * activity still gets a button, same as a genuinely inactive year would on GitHub; only years
+   * before the oldest real activity are excluded, per the original ask. Falls back to just the
+   * current year if every source is genuinely empty. */
+  protected readonly availableYears = computed<number[]>(() => {
+    const years = new Set<number>();
+    for (const source of this.sources()) {
+      for (const key of source.dailyActivity.keys()) years.add(Number(key.slice(0, 4)));
+    }
+    const currentYear = new Date().getUTCFullYear();
+    if (years.size === 0) return [currentYear];
+
+    const oldest = Math.min(...years);
+    const newest = Math.max(currentYear, ...years);
+    const range: number[] = [];
+    for (let y = newest; y >= oldest; y--) range.push(y);
+    return range;
+  });
+
+  /** Defaults to the most recent year with activity. `linkedSignal` re-derives that default (and
+   * drops any manual click) whenever `availableYears` actually changes — i.e. when a new/reset
+   * file import changes what years exist — but otherwise leaves the user's own year choice alone. */
+  protected readonly selectedYear = linkedSignal<number>(() => this.availableYears()[0]);
+
+  protected selectYear(year: number): void {
+    this.selectedYear.set(year);
+  }
+
   protected readonly weeks = computed<Week[]>(() => {
     const srcs = this.sources();
-    const allKeys = srcs.flatMap((s) => Array.from(s.dailyActivity.keys()));
-    if (allKeys.length === 0) return [];
-
-    allKeys.sort();
-    const firstMs = Date.parse(`${allKeys[0]}T00:00:00Z`);
-    const lastMs = Date.parse(`${allKeys[allKeys.length - 1]}T00:00:00Z`);
+    const year = this.selectedYear();
 
     // Per-source max, not global — each source's own ramp level is computed against its own
     // activity range (DESIGN_DIRECTION.md: "each one's own ramp level ... using that source's
@@ -101,17 +126,11 @@ export class ActivityHeatmap {
       return values.length ? Math.max(...values) : 0;
     });
 
-    // Always show a full Jan-Dec calendar year, not just the days you were actually active — a
-    // short burst of activity still reads in year-long context instead of a cropped strip, and
-    // the grid lines up with a real calendar rather than a rolling "365 days back from today"
-    // window. Baseline is the current calendar year; still extends further when real data falls
-    // outside it (earlier history or, for a stale export, activity later than today's year would
-    // suggest) — never truncating genuine history to fit.
-    const currentYear = new Date().getUTCFullYear();
-    const yearStartMs = Date.parse(`${currentYear}-01-01T00:00:00Z`);
-    const yearEndMs = Date.parse(`${currentYear}-12-31T00:00:00Z`);
-    const windowStart = Math.min(firstMs, yearStartMs);
-    const windowEnd = Math.max(lastMs, yearEndMs);
+    // Exactly the selected calendar year, Jan 1-Dec 31 (366 days on a leap year, handled for
+    // free by iterating real dates rather than assuming 365) — no extending into neighboring
+    // years anymore now that the year picker gives an explicit way to browse to them instead.
+    const windowStart = Date.parse(`${year}-01-01T00:00:00Z`);
+    const windowEnd = Date.parse(`${year}-12-31T00:00:00Z`);
 
     // Columns still align to real calendar weeks (Sunday-Saturday) so month boundaries land
     // cleanly, but the edge columns are trimmed to the exact window below rather than padded
