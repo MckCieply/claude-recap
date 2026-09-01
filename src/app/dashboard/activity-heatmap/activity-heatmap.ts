@@ -101,14 +101,17 @@ export class ActivityHeatmap {
       return values.length ? Math.max(...values) : 0;
     });
 
-    // GitHub's own graph always shows a full year, not just the days you were actually active —
-    // a short burst of activity still reads in a full-year context instead of looking like a
-    // cropped one-week strip. Enforce at least a 365-day trailing window ending at today (or at
-    // the last activity date if that's somehow later than today), while still extending further
-    // back than a year when the real data does — never truncating genuine history to fit.
-    const todayMs = Date.parse(`${toDateKey(Date.now())}T00:00:00Z`);
-    const windowEnd = Math.max(lastMs, todayMs);
-    const windowStart = Math.min(firstMs, windowEnd - 364 * MS_PER_DAY);
+    // Always show a full Jan-Dec calendar year, not just the days you were actually active — a
+    // short burst of activity still reads in year-long context instead of a cropped strip, and
+    // the grid lines up with a real calendar rather than a rolling "365 days back from today"
+    // window. Baseline is the current calendar year; still extends further when real data falls
+    // outside it (earlier history or, for a stale export, activity later than today's year would
+    // suggest) — never truncating genuine history to fit.
+    const currentYear = new Date().getUTCFullYear();
+    const yearStartMs = Date.parse(`${currentYear}-01-01T00:00:00Z`);
+    const yearEndMs = Date.parse(`${currentYear}-12-31T00:00:00Z`);
+    const windowStart = Math.min(firstMs, yearStartMs);
+    const windowEnd = Math.max(lastMs, yearEndMs);
 
     // Pad to full weeks: Sunday on/before first, Saturday on/after last (UTC).
     const gridStart = windowStart - new Date(windowStart).getUTCDay() * MS_PER_DAY;
