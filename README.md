@@ -6,6 +6,10 @@
 
 ---
 
+![Activity heatmap — GitHub-style, per-source color for multi-file imports](docs/heatmap-demo.svg)
+
+*Synthetic demo data, not a real account — see [Privacy](#privacy--read-this-before-uploading-anything). Static export; the live app's heatmap is interactive (hover for exact counts, click a year to switch).*
+
 ## What is this?
 
 Claude.ai doesn't expose a public API for personal historical usage stats — no "how many messages have I sent since 2024" endpoint. What it *does* offer is a manual data export (Settings → Privacy → Export data) containing your full conversation history.
