@@ -29,9 +29,9 @@
   // Sequential heatmap ramp (validated — see DESIGN_DIRECTION.md "Data visualization")
   --heat-0: var(--surface-1); // no activity — not part of the ramp
   // heat-1/2/3 are a boosted-saturation variant of primary, not primary itself — see
-  // DESIGN_DIRECTION.md's 2026-09-01 decision log entry (2nd re-derivation).
-  --heat-1: #363a9f;
-  --heat-2: #453ee0;
+  // DESIGN_DIRECTION.md's 2026-09-01 decision log entries (3 re-derivation passes).
+  --heat-1: #454d7e;
+  --heat-2: #4e58b6;
   --heat-3: #5962eb;
 
   // Typography
