@@ -28,9 +28,11 @@
 
   // Sequential heatmap ramp (validated — see DESIGN_DIRECTION.md "Data visualization")
   --heat-0: var(--surface-1); // no activity — not part of the ramp
-  --heat-1: #3f4666;
-  --heat-2: #4d579e;
-  --heat-3: var(--primary);
+  // heat-1/2/3 are a boosted-saturation variant of primary, not primary itself — see
+  // DESIGN_DIRECTION.md's 2026-09-01 decision log entry (2nd re-derivation).
+  --heat-1: #363a9f;
+  --heat-2: #453ee0;
+  --heat-3: #5962eb;
 
   // Typography
   --font-display: 'SF Pro Display', -apple-system, 'Segoe UI', system-ui, sans-serif;
