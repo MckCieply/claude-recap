@@ -1,10 +1,16 @@
-$cell: 10px; // matches GitHub's own contribution-graph cell size
-$gap: 3px;
-
 :host {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+  // The whole grid scales with the component's own rendered width (a container query, not the
+  // viewport) so it grows on a wide dashboard and shrinks on a narrow one, floor and ceiling both
+  // capped: `cqw` is relative to this element's own inline-size, not the page's. 10px (GitHub's
+  // own baseline) sits near the middle of the clamp at the dashboard's default ~944px content
+  // width; 8px is the smallest a cell can get before it stops reading as a distinct square, 14px
+  // is "some point" past which more room shouldn't just keep inflating the cells.
+  container-type: inline-size;
+  --cell-size: clamp(8px, 1.4cqw, 14px);
+  --cell-gap: clamp(2px, 0.4cqw, 4px);
 }
 
 .activity-heatmap__row {
@@ -29,14 +35,14 @@ $gap: 3px;
 
 .activity-heatmap__grid {
   display: flex;
-  gap: $gap;
+  gap: var(--cell-gap);
   width: max-content;
 }
 
 .activity-heatmap__week {
   display: flex;
   flex-direction: column;
-  gap: $gap;
+  gap: var(--cell-gap);
   position: relative;
 }
 
@@ -53,8 +59,8 @@ $gap: 3px;
 }
 
 .activity-heatmap__cell {
-  width: $cell;
-  height: $cell;
+  width: var(--cell-size);
+  height: var(--cell-size);
   padding: 0;
   border: none;
   border-radius: 2px;
@@ -130,8 +136,8 @@ $gap: 3px;
   color: var(--ink-subtle);
 
   .activity-heatmap__cell {
-    width: $cell;
-    height: $cell;
+    width: var(--cell-size);
+    height: var(--cell-size);
   }
 }
 
@@ -155,8 +161,8 @@ $gap: 3px;
 }
 
 .activity-heatmap__source-swatch {
-  width: $cell;
-  height: $cell;
+  width: var(--cell-size);
+  height: var(--cell-size);
   border-radius: 2px;
   flex: none;
 }
