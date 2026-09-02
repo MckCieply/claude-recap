@@ -54,9 +54,9 @@ const MS_PER_DAY = 86_400_000;
  * the single-source backward-compat path exact.
  */
 const RAMP: Record<0 | 1 | 2, Record<1 | 2 | 3, string>> = {
-  0: { 1: '#454d7e', 2: '#4e58b6', 3: '#5962eb' },
-  1: { 1: '#815444', 2: '#ad583a', 3: '#d65c2d' },
-  2: { 1: '#496959', 2: '#418265', 3: '#349c73' },
+  0: { 1: '#484f74', 2: '#515ba8', 3: '#5962eb' },
+  1: { 1: '#7a584c', 2: '#a45e45', 3: '#d65c2d' },
+  2: { 1: '#4f675b', 2: '#4c8068', 3: '#349c73' },
 };
 
 /** Neutral fallback fill for a day touched only by a colorSlot-undefined (4th+) source — see
