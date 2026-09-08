@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { Landing } from './landing';
 import type { ImportBatchResult } from './landing';
 
@@ -41,6 +41,10 @@ function access(component: Landing): LandingTestAccess {
 describe('Landing', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({ imports: [Landing] }).compileComponents();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('renders the privacy promise and a dropzone', () => {
@@ -106,5 +110,37 @@ describe('Landing', () => {
     expect(emitted?.accepted).toHaveLength(1);
     expect(emitted?.failed).toHaveLength(1);
     expect(emitted?.failed[0].name).toBe('bad-export.json');
+  });
+
+  it('loads and imports the bundled sample dataset via a same-origin fetch', async () => {
+    const fixture = TestBed.createComponent(Landing);
+    const component = fixture.componentInstance;
+    let emitted: ImportBatchResult | undefined;
+    component.imported.subscribe((event) => (emitted = event));
+
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify([validConversation]), { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await component['loadSampleData']();
+
+    expect(fetchMock).toHaveBeenCalledWith('sample-data/conversations.json');
+    expect(emitted?.accepted).toHaveLength(1);
+    expect(emitted?.failed).toHaveLength(0);
+  });
+
+  it('surfaces an error row if the sample dataset fails to load', async () => {
+    const fixture = TestBed.createComponent(Landing);
+    const component = fixture.componentInstance;
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('not found', { status: 404 })),
+    );
+
+    await component['loadSampleData']();
+
+    const rows = access(component).rows();
+    expect(rows).toHaveLength(1);
+    expect(rows[0].status).toBe('error');
   });
 });

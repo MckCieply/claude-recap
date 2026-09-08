@@ -4,7 +4,7 @@
 
 **⚠️ Unofficial, community project.** Not affiliated with, endorsed by, or sponsored by Anthropic. "Claude" is a trademark of Anthropic PBC, used here only to describe compatibility.
 
-**Live demo:** not published yet — no hosting is wired up. Run it locally for now (see [Running locally](#running-locally)).
+**🔗 Live demo: [mckcieply.github.io/claude-recap](https://mckcieply.github.io/claude-recap/)** — no export handy? Click "Try it with sample data" on the page. See [Privacy](#privacy--read-this-before-uploading-anything) for how to verify the hosted build yourself.
 
 ---
 
@@ -56,7 +56,11 @@ Your export contains the full text of every conversation you've ever had with Cl
 
 If a hosted version of this tool exists, treat it the same as running it locally: check the network tab, or just run it from source.
 
+**The hosted build at [mckcieply.github.io/claude-recap](https://mckcieply.github.io/claude-recap/) has been verified this way** — open your browser's network tab, load the page, then disconnect from the internet entirely and drop a `conversations.json` in. It still renders the full dashboard, because nothing after the initial page load ever leaves (or reaches) your browser. Repeat the check yourself any time; it should hold on every deploy, not just this one.
+
 ## Getting started
+
+No export yet? Click **"Try it with sample data"** on the [live demo](https://mckcieply.github.io/claude-recap/) to explore a full dashboard built from a synthetic, made-up dataset — or download it directly: [`sample-data/conversations.json`](public/sample-data/conversations.json).
 
 1. **Export your data**: claude.ai → profile icon → Settings → Privacy → **Export data**. Anthropic emails you a download link (valid ~24h).
 2. **Unzip the archive** — you'll get a `conversations.json` (and possibly other files; only `conversations.json` is used).
@@ -97,7 +101,7 @@ Hard constraints any choice had to satisfy, driven by the [Privacy](#privacy--re
 | Accessibility | WCAG AA target, AXE-audited | The heatmap's year picker and per-day cells, and the file-drop zone's live import status, are keyboard-navigable and screen-reader labeled (`role`/`aria-*`), not just visually styled |
 | Testing | Vitest | Angular CLI's current default test runner |
 | Build | `@angular/build` (esbuild-based `application` builder) | Angular CLI default since v17; Webpack path is deprecated as of v22 |
-| Hosting (optional) | GitHub Pages, Netlify, Vercel static, or just open the built `dist/` locally | Purely static output either way — "hosted version" in the Privacy section refers to this |
+| Hosting | **GitHub Pages** — deployed by [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml) on every push to `main` | Purely static output; also works from Netlify, Vercel static, or just the built `dist/` opened locally — "hosted version" in the Privacy section refers to whichever one you're looking at |
 
 Full Angular coding conventions for this repo (signals-first, `input()`/`output()`/`model()`, Signal Forms, a11y bar, etc.) live in [CLAUDE.md](CLAUDE.md), generated from Angular's own current best-practice list via `ng new --ai-config=claude-code`.
 

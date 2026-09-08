@@ -34,8 +34,41 @@ export class Landing {
 
   protected readonly rows = signal<FileRow[]>([]);
   protected readonly isDragging = signal(false);
+  protected readonly isLoadingSample = signal(false);
 
   private nextId = 0;
+
+  /**
+   * Fetches the bundled synthetic demo dataset (same-origin static asset, never a network
+   * call outside this app's own build) and runs it through the exact same read/parse/accept
+   * pipeline as a dropped file, so a first-time visitor with no export of their own can still
+   * see a full dashboard.
+   */
+  protected async loadSampleData(): Promise<void> {
+    if (this.isLoadingSample()) return;
+    this.isLoadingSample.set(true);
+    try {
+      const response = await fetch('sample-data/conversations.json');
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      const text = await response.text();
+      const file = new File([text], 'sample-conversations.json', { type: 'application/json' });
+      await this.processFiles([file]);
+    } catch {
+      this.rows.set([
+        {
+          id: `row-${this.nextId++}`,
+          name: 'sample-conversations.json',
+          label: 'sample-conversations',
+          status: 'error',
+          message: "Couldn't load the sample data. Try again, or drop your own export instead.",
+        },
+      ]);
+    } finally {
+      this.isLoadingSample.set(false);
+    }
+  }
 
   protected onDragOver(event: DragEvent): void {
     event.preventDefault();
