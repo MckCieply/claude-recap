@@ -31,7 +31,7 @@ Everything here follows from one constraint: **your data never leaves your brows
 - 📈 **Approximate token estimate** *(see caveat below — not exact)*
 - 🧵 **Highlights** — longest conversation, most active month, most active year
 - 🖼️ **Widget export** — save any individual stat card (heatmap, streak, top stats, etc.) as a standalone PNG or SVG image — like Spotify Wrapped's individual share slides
-- 🗂️ **Multiple exports at once** — drop in more than one `conversations.json` (e.g. a personal account and a work account) and see them together on one dashboard. Each of the first 3 sources gets its own identity color; the activity heatmap blends per-day where two sources overlap (a diagonal gradient between their colors) and marks a third overlapping source with a small corner swatch. A 4th+ source still counts fully toward the combined totals and heatmap, just without its own color.
+- 🗂️ **Multiple exports at once** — drop in more than one `conversations.json` (e.g. a personal account and a work account) and see them together on one dashboard. Each of the first 3 sources gets its own identity color, shaded against *its own* activity range rather than a shared scale, so a light-use account still shows visible highs and lows instead of reading as uniformly faint next to a heavier one. The activity heatmap blends per-day where two sources overlap (a diagonal gradient between their colors) and marks a third overlapping source with a small corner swatch. A 4th+ source still counts fully toward the combined totals and heatmap, just without its own color.
 
 ## How it works
 
@@ -94,6 +94,7 @@ Hard constraints any choice had to satisfy, driven by the [Privacy](#privacy--re
 | Charts / heatmap / stat tiles | Hand-rolled SVG | Per the vendored `dataviz` skill (see [CLAUDE.md](CLAUDE.md)) — no charting library pulled in |
 | Widget → image export | Native DOM-to-SVG export (clone + inline computed styles + `<foreignObject>`), rasterized to PNG via canvas when needed | No `html-to-image`/`html2canvas` — avoids a second render path |
 | Styling | Angular component styles, SCSS, view encapsulation (scoped) | Follows the locked design direction in [.claude/DESIGN_DIRECTION.md](.claude/DESIGN_DIRECTION.md) (reference brand: Linear's marketing site) |
+| Accessibility | WCAG AA target, AXE-audited | The heatmap's year picker and per-day cells, and the file-drop zone's live import status, are keyboard-navigable and screen-reader labeled (`role`/`aria-*`), not just visually styled |
 | Testing | Vitest | Angular CLI's current default test runner |
 | Build | `@angular/build` (esbuild-based `application` builder) | Angular CLI default since v17; Webpack path is deprecated as of v22 |
 | Hosting (optional) | GitHub Pages, Netlify, Vercel static, or just open the built `dist/` locally | Purely static output either way — "hosted version" in the Privacy section refers to this |
