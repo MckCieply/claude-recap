@@ -1,8 +1,10 @@
-# Claude Unwrapped
+# claude-recap
 
 > Turn your official Claude.ai data export into a personal, "wrapped"-style usage dashboard — entirely in your browser.
 
 **⚠️ Unofficial, community project.** Not affiliated with, endorsed by, or sponsored by Anthropic. "Claude" is a trademark of Anthropic PBC, used here only to describe compatibility.
+
+**Live demo:** not published yet — no hosting is wired up. Run it locally for now (see [Running locally](#running-locally)).
 
 ---
 
@@ -14,18 +16,22 @@
 
 Claude.ai doesn't expose a public API for personal historical usage stats — no "how many messages have I sent since 2024" endpoint. What it *does* offer is a manual data export (Settings → Privacy → Export data) containing your full conversation history.
 
-**Claude Unwrapped** reads that export and turns it into a visual summary of your usage — similar in spirit to Spotify Wrapped or a GitHub contribution graph: how long you've been using Claude, your activity over time, streaks, busiest hours, and more.
+**claude-recap** reads that export and turns it into a visual summary of your usage — similar in spirit to Spotify Wrapped or a GitHub contribution graph: how long you've been using Claude, your activity over time, streaks, busiest hours, and more.
+
+## Why this stack
+
+Everything here follows from one constraint: **your data never leaves your browser.** No backend, no upload, works fully offline once the page has loaded. That single rule drives most of the technical choices below — zoneless Angular with signals instead of a server-rendered framework, hand-rolled SVG instead of a charting library with its own data-fetching assumptions, and a native DOM→SVG→canvas export pipeline instead of a screenshot library, so that turning a stat card into a shareable PNG never has to leave the page either. See [Tech stack](#tech-stack) for the full breakdown.
 
 ## Features
 
-- 📅 **Timeline** — date of your first conversation, total days/years active
-- 🔥 **Activity heatmap** — daily message activity, GitHub-contribution-graph style
+- 📅 **Timeline** — date of your first conversation, total days active
+- 🔥 **Activity heatmap** — daily message activity, GitHub-contribution-graph style, with a year picker
 - 🌙 **Patterns** — busiest day of week, busiest hour, longest streak
-- 💬 **Counts** — total conversations, messages, words over time
+- 💬 **Counts** — total conversations, messages, words
 - 📈 **Approximate token estimate** *(see caveat below — not exact)*
-- 🧵 **Highlights** — longest conversation, most active month/year
-- 🖼️ **Export widgets** — save any individual stat card (heatmap, streak, top stats, etc.) as a standalone PNG/SVG image, sized for sharing — like Spotify Wrapped's individual share slides
-- 🗂️ **Multiple exports at once** — drop in more than one `conversations.json` (e.g. a personal account and a work account) and see them together on one dashboard. Each file gets its own color; the activity heatmap blends per-day where files overlap — corners of a cell show each source's own color and intensity, the center shows the mixed hue. Import as many as you like; distinct per-file colors are supported for up to 3 at once (most people use 1–2).
+- 🧵 **Highlights** — longest conversation, most active month, most active year
+- 🖼️ **Widget export** — save any individual stat card (heatmap, streak, top stats, etc.) as a standalone PNG or SVG image — like Spotify Wrapped's individual share slides
+- 🗂️ **Multiple exports at once** — drop in more than one `conversations.json` (e.g. a personal account and a work account) and see them together on one dashboard. Each of the first 3 sources gets its own identity color; the activity heatmap blends per-day where two sources overlap (a diagonal gradient between their colors) and marks a third overlapping source with a small corner swatch. A 4th+ source still counts fully toward the combined totals and heatmap, just without its own color.
 
 ## How it works
 
@@ -35,7 +41,7 @@ export data (.json, 1+ files)  →  drop in browser  →  parsed & rendered loca
 
 Nothing here is a live feed — it's a one-time (or whenever-you-want) pass over a static export file. There's no account, no login, no backend to talk to. The whole thing could run from a single HTML file with no internet connection at all, and that's intentional (see [Privacy](#privacy--read-this-before-uploading-anything)).
 
-**Widget export**, specifically: every card in the dashboard is a self-contained visual unit. Each one gets an "export" affordance that renders *that card alone* to a PNG (and/or SVG) at a fixed shareable size — no account data leaks into the image beyond what's already shown on the card itself, and the export happens the same way everything else does: in your browser, nothing uploaded anywhere.
+**Widget export**, specifically: every card in the dashboard is a self-contained visual unit. Each one gets an export control that clones the card, inlines its computed styles, and serializes it to a standalone SVG (offered directly, or rasterized to a PNG via an in-memory canvas) — no `html-to-image`/`html2canvas`, no server round-trip, nothing uploaded anywhere.
 
 ## Privacy — read this before uploading anything
 
@@ -53,15 +59,15 @@ If a hosted version of this tool exists, treat it the same as running it locally
 ## Getting started
 
 1. **Export your data**: claude.ai → profile icon → Settings → Privacy → **Export data**. Anthropic emails you a download link (valid ~24h).
-2. **Unzip the archive** — you'll get a `conversations.json` (and possibly `projects.json` / account info files).
+2. **Unzip the archive** — you'll get a `conversations.json` (and possibly other files; only `conversations.json` is used).
 3. Open the tool and drop `conversations.json` in — drop more than one (e.g. from a second account) to see them together, each in its own color.
 4. Browse your stats.
 
 ### Running locally
 
 ```bash
-git clone https://github.com/<your-username>/claude-unwrapped.git
-cd claude-unwrapped
+git clone https://github.com/MckCieply/claude-recap.git
+cd claude-recap
 npm install
 npm start
 ```
@@ -70,11 +76,11 @@ Opens a dev server (Angular CLI, `ng serve`) at `http://localhost:4200`.
 
 ## Limitations
 
-- **Token counts are an estimate.** Claude's exact tokenizer isn't public, so figures are heuristic and may differ from your real usage.
-- **Projects and memory** are inconsistently included (or excluded) in the standard export — features relying on them may be partial.
+- **Token counts are an estimate.** Claude's exact tokenizer isn't public, so figures are heuristic (word count × 1.3) and may differ from your real usage.
+- **Projects and memory** are inconsistently included (or excluded) in the standard export — stats derived from conversations tied to a Project may be partial.
 - **This is a snapshot, not a live feed.** Re-export your data any time you want fresh stats; there's no way to auto-sync.
 - Very long conversations occasionally have incomplete data in Anthropic's own export (a known limitation on their end).
-- **Distinct per-file colors are capped at 3 imports.** A 4th+ file is still counted in the combined totals; how it's distinguished visually isn't decided yet.
+- **Distinct per-file colors are capped at 3 imports.** A 4th+ file is still counted in the combined totals and heatmap, just rendered in a neutral fallback color instead of its own hue.
 
 ## Tech stack
 
@@ -85,16 +91,14 @@ Hard constraints any choice had to satisfy, driven by the [Privacy](#privacy--re
 | Framework | **Angular v22**, standalone components, zoneless (no Zone.js — removed by default in v22) | Chosen for existing team experience; `--routing=false`, single view with internal state, no SSR |
 | Language | **TypeScript**, strict mode | |
 | State | **Signals** (`signal()`/`computed()`/`linkedSignal()`) | Angular's current default state model, not RxJS-for-everything |
-| Charts / heatmap / stat tiles | Hand-rolled SVG | Per the vendored `dataviz` skill (see [CLAUDE.md](CLAUDE.md)) — no charting library pulled in unless a specific chart needs more |
-| Widget → image export | TBD at implementation time: native SVG/canvas export vs. `html-to-image`/`html2canvas` | Leaning native (the on-screen widget *is* the exportable SVG) to avoid a second render path — confirmed once the first widget is built |
-| Styling | Angular component styles, SCSS, view encapsulation (scoped) | Follows the locked design direction in [.claude/DESIGN_DIRECTION.md](.claude/DESIGN_DIRECTION.md) once that's set |
+| Charts / heatmap / stat tiles | Hand-rolled SVG | Per the vendored `dataviz` skill (see [CLAUDE.md](CLAUDE.md)) — no charting library pulled in |
+| Widget → image export | Native DOM-to-SVG export (clone + inline computed styles + `<foreignObject>`), rasterized to PNG via canvas when needed | No `html-to-image`/`html2canvas` — avoids a second render path |
+| Styling | Angular component styles, SCSS, view encapsulation (scoped) | Follows the locked design direction in [.claude/DESIGN_DIRECTION.md](.claude/DESIGN_DIRECTION.md) (reference brand: Linear's marketing site) |
 | Testing | Vitest | Angular CLI's current default test runner |
 | Build | `@angular/build` (esbuild-based `application` builder) | Angular CLI default since v17; Webpack path is deprecated as of v22 |
 | Hosting (optional) | GitHub Pages, Netlify, Vercel static, or just open the built `dist/` locally | Purely static output either way — "hosted version" in the Privacy section refers to this |
 
 Full Angular coding conventions for this repo (signals-first, `input()`/`output()`/`model()`, Signal Forms, a11y bar, etc.) live in [CLAUDE.md](CLAUDE.md), generated from Angular's own current best-practice list via `ng new --ai-config=claude-code`.
-
-This section gets filled in for real once we pick — the [Getting started](#running-locally) commands below (`npm install && npm run dev`) assume a Vite-style setup and will need updating to match whatever we land on.
 
 ## Contributing
 
@@ -102,4 +106,4 @@ Issues and PRs welcome. Please **do not** attach real export data (yours or anyo
 
 ## License
 
-MIT
+[GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0).
