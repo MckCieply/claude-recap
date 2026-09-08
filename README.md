@@ -4,6 +4,8 @@
 
 **⚠️ Unofficial, community project.** Not affiliated with, endorsed by, or sponsored by Anthropic. "Claude" is a trademark of Anthropic PBC, used here only to describe compatibility.
 
+**🔗 Live demo: [mckcieply.github.io/claude-recap](https://mckcieply.github.io/claude-recap/)** — no export handy? Click "Try it with sample data" on the page. See [Privacy](#privacy--read-this-before-uploading-anything) for how to verify the hosted build yourself.
+
 ---
 
 ![Activity heatmap — GitHub-style, per-source color for multi-file imports](docs/heatmap-demo.svg)
@@ -50,7 +52,11 @@ Your export contains the full text of every conversation you've ever had with Cl
 
 If a hosted version of this tool exists, treat it the same as running it locally: check the network tab, or just run it from source.
 
+**The hosted build at [mckcieply.github.io/claude-recap](https://mckcieply.github.io/claude-recap/) has been verified this way** — open your browser's network tab, load the page, then disconnect from the internet entirely and drop a `conversations.json` in. It still renders the full dashboard, because nothing after the initial page load ever leaves (or reaches) your browser. Repeat the check yourself any time; it should hold on every deploy, not just this one.
+
 ## Getting started
+
+No export yet? Click **"Try it with sample data"** on the [live demo](https://mckcieply.github.io/claude-recap/) to explore a full dashboard built from a synthetic, made-up dataset — or download it directly: [`sample-data/conversations.json`](public/sample-data/conversations.json).
 
 1. **Export your data**: claude.ai → profile icon → Settings → Privacy → **Export data**. Anthropic emails you a download link (valid ~24h).
 2. **Unzip the archive** — you'll get a `conversations.json` (and possibly `projects.json` / account info files).

@@ -97,6 +97,17 @@
   <p class="landing__hint">
     Drop multiple files at once (e.g. a personal and a work export) to see them together, each in its own color.
   </p>
+
+  <button
+    type="button"
+    class="sample-button"
+    [disabled]="isLoadingSample()"
+    [attr.aria-busy]="isLoadingSample()"
+    (click)="loadSampleData()"
+  >
+    {{ isLoadingSample() ? 'Loading sample data…' : 'Try it with sample data' }}
+  </button>
+  <p class="landing__hint">No export yet? Explore a synthetic demo dataset instead — no upload, still fully local.</p>
 </section>
 
 <p class="landing__export-help">
