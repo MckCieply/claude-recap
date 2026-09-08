@@ -26,6 +26,10 @@ jobs:
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
+        with:
+          # Auto-enable Pages (source: GitHub Actions) if it isn't already turned on for this
+          # repo, instead of failing the run with "Get Pages site failed".
+          enablement: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
